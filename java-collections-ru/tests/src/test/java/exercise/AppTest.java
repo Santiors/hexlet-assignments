@@ -44,11 +44,18 @@ class AppTest {
     @Test
     void testTakeOutOfLength() {
         List<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-        int numberOfElements = 6;
         List<Integer> checkList = new ArrayList<>();
         for (int i = 0; i < numbers.size(); i++) {
             checkList.add(numbers.get(i));
         }
-        assertThat(App.take(numbers, numberOfElements)).isEqualTo(checkList);
+        assertThat(App.take(numbers, 6)).isEqualTo(checkList);
     }
+
+    @Test
+    void testTakeWithEmptyList() {
+        List<Integer> numbers = new ArrayList<>();
+        List<Integer> checkList = new ArrayList<>();
+        assertThat(App.take(numbers, 2)).isEqualTo(checkList);
+    }
+    
 }
