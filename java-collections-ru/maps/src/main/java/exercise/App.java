@@ -35,9 +35,9 @@ public class App {
             ArrayList keys = new ArrayList(wordCount1.keySet());
             String output = "{" + "\n";
             for (int i = 0; i < keys.size(); i++) {
-                output+= "  " + keys.get(i) + ":" + " " + values.get(i) + "\n";
+                output += "  " + keys.get(i) + ":" + " " + values.get(i) + "\n";
             }
-            output+= "}";
+            output += "}";
             return output;
         }
     }
