@@ -11,17 +11,11 @@ public class App {
     public static Map<String, Integer> getWordCount(String sentence) {
         Map<String, Integer> map = new HashMap<>();
         if (!sentence.isEmpty()) {
-            String[] letters = sentence.split(" ");
-            ArrayList coll = new ArrayList(Arrays.asList(letters));
-            ArrayList helpList = new ArrayList(Arrays.asList(letters));
-            for (int i = 0; i < coll.size(); i++) {
-                int counter = 0;
-                for (int j = 0; j < helpList.size(); j++) {
-                    if (coll.get(i).equals(helpList.get(j))) {
-                        counter++;
-                    }
-                }
-                map.put(String.valueOf(coll.get(i)), counter);
+            String[] words = sentence.split(" ");
+            for (String word : words) {
+                int counter = map.getOrDefault(word, 0);
+                counter++;
+                map.put(word, counter);
             }
         }
         return map;
