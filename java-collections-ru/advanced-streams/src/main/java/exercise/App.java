@@ -1,24 +1,21 @@
 package exercise;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // BEGIN
 public class App {
 
     public static String getForwardedVariables(String data) {
-        List<String> result = Stream.of(data.split("\n"))
-                .filter(d -> d.startsWith("environment") && d.contains("X_FORWARDED"))
-                .map(d -> d.substring(13, d.length() - 1))
-                .collect(Collectors.toList());
-        String test = new String();
-        for (int i = 0; i<result.size(); i++){
-            test+= result.get(i) + ",";
-        }
-        return Stream.of(test.split(","))
-                .filter(d -> d.contains("X_FORWARDED"))
-                .map(d -> d.replaceAll("X_FORWARDED_", ""))
+        String[] strings = data.split("\n");
+        return Arrays.stream(strings)
+                .filter(s -> s.startsWith("environment") && s.contains("X_FORWARDED"))
+                .map(s -> s.replaceAll("environment=", ""))
+                .map(s -> s.replaceAll("\"", ""))
+                .map(s -> s.split(","))
+                .flatMap(Arrays::stream)
+                .filter(d -> d.startsWith("X_FORWARDED_"))
+                .map(d -> d.replaceFirst("X_FORWARDED_", ""))
                 .collect(Collectors.joining(","));
     }
 }
