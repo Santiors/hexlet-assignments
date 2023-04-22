@@ -1,6 +1,6 @@
 package exercise;
+import exercise.connections.Connection;
 import exercise.connections.Disconnected;
-import exercise.connections.State;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -9,18 +9,18 @@ import java.util.ArrayList;
 public class TcpConnection {
     private String ipAddress;
     private int port;
-    private State state;
+    private Connection connection;
     private List<String> buffer;
 
     public TcpConnection(String ipAddress, int port) {
         this.ipAddress = ipAddress;
         this.port = port;
-        this.state = new Disconnected(this);
+        this.connection = new Disconnected(this);
         this.buffer = new ArrayList<>();
     }
 
-    public void changeState(State initialState) {
-        this.state = initialState;
+    public void changeState(Connection initialConnection) {
+        this.connection = initialConnection;
     }
 
     public void addToBuffer(String data) {
@@ -28,19 +28,19 @@ public class TcpConnection {
     }
 
     public String getCurrentState() {
-        return state.getCurrentState();
+        return connection.getCurrentState();
     }
 
     public void connect() {
-        state.connect();
+        connection.connect();
     }
 
     public void disconnect() {
-        state.disconnect();
+        connection.disconnect();
     }
 
     public void write(String data) {
-        state.write(data);
+        connection.write(data);
     }
 }
 // END
