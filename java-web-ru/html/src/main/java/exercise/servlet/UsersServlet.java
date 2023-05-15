@@ -1,25 +1,20 @@
 package exercise.servlet;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.ArrayUtils;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import java.nio.file.Files;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import exercise.User;
-import org.apache.commons.lang3.ArrayUtils;
 
 public class UsersServlet extends HttpServlet {
 
@@ -41,15 +36,15 @@ public class UsersServlet extends HttpServlet {
         showUser(request, response, id);
     }
 
-    private List<User> getUsers() throws JsonProcessingException, IOException {
+    private List getUsers() throws JsonProcessingException, IOException {
         // BEGIN
-        ObjectMapper objectMapper = new ObjectMapper();
-        InputStream inputStream = getClass().getResourceAsStream("/users.json");
+        Path usersPath = Paths.get("src", "main", "resources", "users.json")
+                .toAbsolutePath().normalize();
 
-        List<User> users = objectMapper.readValue(inputStream, new TypeReference<List<User>>() {});
-        inputStream.close();
+        String content = Files.readString(usersPath);
 
-        return users;
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(content, List.class);
         // END
     }
 
@@ -58,36 +53,46 @@ public class UsersServlet extends HttpServlet {
                 throws IOException {
 
         // BEGIN
-        List<User> users = getUsers();
+        List<Map> users = getUsers();
 
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+        StringBuilder body = new StringBuilder();
+        body.append("""
+            <!DOCTYPE html>
+            <html lang=\"ru\">
+                <head>
+                    <meta charset=\"UTF-8\">
+                    <title>Example application | Users</title>
+                    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css\"
+                          rel=\"stylesheet\"
+                          integrity=\"sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We\"
+                          crossorigin=\"anonymous\">
+                </head>
+                <body>
+                    <div class=\"container\">
+                        <a href=\"/\">Главная</a>
+                        <table>
+            """);
 
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>List of Users</title>");
-        out.println("</head>");
-        out.println("<body>");
+        for (Map<String, String> user : users) {
+            String id = user.get("id");
+            String fullName = user.get("firstName") + " " + user.get("lastName");
 
-        out.println("<table>");
-        out.println("<tr>");
-        out.println("<th>Id</th>");
-        out.println("<th>Full Name</th>");
-        out.println("</tr>");
-
-        for (User user : users) {
-            out.println("<tr>");
-            out.println("<td>" + user.getId() + "</td>");
-            out.println("<td><a href=\"/users/" + user.getId() + "\">" + user.getFullName() + "</a></td>");
-            out.println("</tr>");
+            body.append("<tr>");
+            body.append("<td>" + id + "</td>");
+            body.append("<td><a href=\"/users/" + id + "\">" + fullName + "</a></td>");
+            body.append("</tr>");
         }
 
-        out.println("</table>");
+        body.append("""
+                        </table>
+                    </div>
+                </body>
+            </html>
+            """);
 
-        out.println("</body>");
-        out.println("</html>");
-
-        out.close();
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println(body.toString());
         // END
     }
 
@@ -97,48 +102,51 @@ public class UsersServlet extends HttpServlet {
                  throws IOException {
 
         // BEGIN
-        User user = null;
-        for (User u : getUsers()) {
-            if (u.getId().equals(id)) {
-                user = u;
-                break;
-            }
-        }
+        List<Map> users = getUsers();
+
+        Map<String, String> user = users
+                .stream()
+                .filter(u -> u.get("id").equals(id))
+                .findAny()
+                .orElse(null);
 
         if (user == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Not found");
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        response.setContentType("text/html");
+        StringBuilder body = new StringBuilder();
+        body.append("""
+            <!DOCTYPE html>
+            <html lang=\"ru\">
+                <head>
+                    <meta charset=\"UTF-8\">
+                    <title>Example application | User</title>
+                    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css\"
+                          rel=\"stylesheet\"
+                          integrity=\"sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We\"
+                          crossorigin=\"anonymous\">
+                </head>
+                <body>
+                    <div class=\"container\">
+                        <a href=\"/users\">Пользователи</a>
+            """);
+
+        for (Map.Entry<String, String> entry : user.entrySet()) {
+            body.append("<div>");
+            body.append(entry.getKey() + ": " + entry.getValue());
+            body.append("</div>");
+        }
+
+        body.append("""
+                    </div>
+                </body>
+            </html>
+            """);
+
+        response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>User Details</title>");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<h1>User Details</h1>");
-        out.println("<table>");
-        out.println("<tr>");
-        out.println("<th>ID</th>");
-        out.println("<th>First Name</th>");
-        out.println("<th>Last Name</th>");
-        out.println("<th>Email</th>");
-        out.println("</tr>");
-
-        out.println("<tr>");
-        out.println("<td>" + user.getId() + "</td>");
-        out.println("<td>" + user.getFirstName() + "</td>");
-        out.println("<td>" + user.getLastName() + "</td>");
-        out.println("<td>" + user.getEmail() + "</td>");
-        out.println("</tr>");
-
-        out.println("</table>");
-        out.println("</body>");
-        out.println("</html>");
-
-        out.close();
+        out.println(body.toString());
         // END
     }
 }
