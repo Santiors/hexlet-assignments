@@ -98,8 +98,8 @@ public class UsersServlet extends HttpServlet {
         }
         // BEGIN
         request.setAttribute("user", user);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/show.jsp?id=" + id);
-        dispatcher.forward(request, response);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/show.jsp");
+        requestDispatcher.forward(request, response);
         // END
     }
 
@@ -117,8 +117,8 @@ public class UsersServlet extends HttpServlet {
         }
         // BEGIN
         request.setAttribute("user", user);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/delete.jsp?id=" + id);
-        dispatcher.forward(request, response);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/delete.jsp");
+        requestDispatcher.forward(request, response);
         // END
     }
 
@@ -136,10 +136,7 @@ public class UsersServlet extends HttpServlet {
         }
         // BEGIN
         users.remove(user);
-        users = getUsers(); // Обновление списка пользователей
-
-        request.setAttribute("users", users); // Обновление атрибута в запросе
-        response.sendRedirect(request.getContextPath() + "/users");
+        response.sendRedirect("/users");
         // END
 
     }

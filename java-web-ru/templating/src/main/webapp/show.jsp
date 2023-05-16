@@ -1,38 +1,32 @@
-<%@ page import="java.util.Map" %>
-<%@ page import="exercise.Data" %>
-<%@ page import="java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!-- BEGIN -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>User Details</title>
+    <title>User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+          crossorigin="anonymous">
 </head>
 <body>
-<h1>User Details</h1>
-<%
-    String id = request.getParameter("id");
-    Map<String, String> user = null;
-    List<Map<String, String>> users = Data.getUsers();
-    for (Map<String, String> u : users) {
-        if (u.get("id").equals(id)) {
-            user = u;
-            break;
-        }
-    }
-
-    if (user == null) {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-%>
-<% if (user != null) { %>
-<p>ID: <%= user.get("id") %></p>
-<p>First Name: <%= user.get("firstName") %></p>
-<p>Last Name: <%= user.get("lastName") %></p>
-<p>Email: <%= user.get("email") %></p>
-<a href="<%= request.getContextPath() %>/users/delete?id=<%= user.get("id") %>">Delete User</a>
-<% } %>
+<div class="container">
+    <a href="/users">All users</a>
+    <table>
+        <tr>
+            <td>${user.get("id")}</td>
+        </tr>
+        <tr>
+            <td>${user.get("firstName")}</td>
+            <td>${user.get("lastName")}</td>
+        </tr>
+        <tr>
+            <td>${user.get("email")}</td>
+        </tr>
+    </table>
+    <a href='/users/delete?id=${user.get("id")}'>Delete</a>
+</div>
 </body>
 </html>
 <!-- END -->

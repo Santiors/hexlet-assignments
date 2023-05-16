@@ -116,22 +116,22 @@ class AppTest {
         assertThat(content).contains("Vernie");
     }
 
-//    @Test
-//    void testDeleteUser() throws IOException, ParseException {
-//        CloseableHttpClient client = HttpClients.createDefault();
-//        HttpPost postRequest = new HttpPost(baseUrl + "/users/delete?id=51");
-//        CloseableHttpResponse response1 = client.execute(postRequest);
-//
-//        assertThat(response1.getCode()).isEqualTo(200);
-//
-//        HttpGet getRequest = new HttpGet(baseUrl + "/users");
-//        CloseableHttpResponse response2 = client.execute(getRequest);
-//        HttpEntity entity = response2.getEntity();
-//        String content = EntityUtils.toString(entity);
-//
-//        assertThat(response2.getCode()).isEqualTo(200);
-//        assertThat(content).doesNotContain("Chun");
-//    }
+    @Test
+    void testDeleteUser() throws IOException, ParseException {
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost postRequest = new HttpPost(baseUrl + "/users/delete?id=51");
+        CloseableHttpResponse response1 = client.execute(postRequest);
+
+        assertThat(response1.getCode()).isEqualTo(200);
+
+        HttpGet getRequest = new HttpGet(baseUrl + "/users");
+        CloseableHttpResponse response2 = client.execute(getRequest);
+        HttpEntity entity = response2.getEntity();
+        String content = EntityUtils.toString(entity);
+
+        assertThat(response2.getCode()).isEqualTo(200);
+        assertThat(content).doesNotContain("Chun");
+    }
 
     @AfterAll
     public static void tearDown() throws LifecycleException {

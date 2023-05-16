@@ -7,34 +7,20 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Delete User</title>
+    <title>Example application | Users</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+          crossorigin="anonymous">
 </head>
 <body>
-<h1>Delete User</h1>
-<p>Are you sure you want to delete this user?</p>
-<%
-    String id = request.getParameter("id");
-    Map<String, String> user = null;
-    List<Map<String, String>> users = Data.getUsers();
-    for (Map<String, String> u : users) {
-        if (u.get("id").equals(id)) {
-            user = u;
-            break;
-        }
-    }
+<div class="container">
+    <a href="/users">All users</a>
+    <p>Are you sure that you want to delete this user ${user.get("firstName")} ${user.get("lastName")} ?</p>
 
-    if (user == null) {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-%>
-<% if (user != null) { %>
-<p>ID: <%= user.get("id") %></p>
-<p>First Name: <%= user.get("firstName") %></p>
-<% } %>
-<form action="<%= request.getContextPath() %>/users/delete" method="post">
-    <input type="hidden" name="id" value="<%= request.getParameter("id") %>">
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form>
+    <form action='/users/delete?id=${user.get("id")}' method="post">
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
 </body>
 </html>
 <!-- END -->
